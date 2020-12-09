@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringListConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.dao</a> &gt; <span class="el_source">StringListConverter.java</span></div><h1>StringListConverter.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.dao;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+
+import static java.util.Collections.*;
+
+@Converter
+<span class="nc" id="L12">public class StringListConverter implements AttributeConverter&lt;List&lt;String&gt;, String&gt; {</span>
+    private static final String SPLIT_CHAR = &quot;;&quot;;
+
+    @Override
+    public String convertToDatabaseColumn(List&lt;String&gt; stringList) {
+<span class="nc bnc" id="L17" title="All 2 branches missed.">        return stringList != null ? String.join(SPLIT_CHAR, stringList) : &quot;&quot;;</span>
+    }
+
+    @Override
+    public List&lt;String&gt; convertToEntityAttribute(String string) {
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        return string != null ? Arrays.asList(string.split(SPLIT_CHAR)) : emptyList();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilmActorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.controller</a> &gt; <span class="el_source">FilmActorController.java</span></div><h1>FilmActorController.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.controller;
+
+import hu.unideb.webdev.controller.dto.FilmActorDto;
+import hu.unideb.webdev.controller.dto.FilmActorUpdateDto;
+import hu.unideb.webdev.exceptions.UnknownActorException;
+import hu.unideb.webdev.exceptions.UnknownFilmException;
+import hu.unideb.webdev.model.FilmActor;
+import hu.unideb.webdev.service.FilmActorService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+<span class="nc" id="L18">@Slf4j</span>
+@RestController
+<span class="nc" id="L20">@RequiredArgsConstructor</span>
+public class FilmActorController {
+
+    private final FilmActorService service;
+
+    @GetMapping(&quot;/FilmActor&quot;)
+    public Collection&lt;FilmActorDto&gt; listFilmActors(){
+<span class="nc" id="L27">        return service.getAllFilmActors().stream().map(</span>
+<span class="nc" id="L28">                model -&gt; FilmActorDto.builder()</span>
+<span class="nc" id="L29">                .filmTitle(model.getFilmTitle())</span>
+<span class="nc" id="L30">                .actorName(model.getActorName())</span>
+<span class="nc" id="L31">                .build()).collect(Collectors.toList());</span>
+    }
+
+
+    @PostMapping(&quot;/FilmActor&quot;)
+    public void createFilmActor(@RequestBody FilmActorDto filmActorDto){
+        try{
+<span class="nc" id="L38">            service.recordFilmActor(</span>
+                    new FilmActor(
+<span class="nc" id="L40">                            filmActorDto.getFilmTitle(),</span>
+<span class="nc" id="L41">                            filmActorDto.getActorName()</span>
+                    )
+            );
+<span class="nc" id="L44">        }catch(UnknownActorException | UnknownFilmException e)</span>
+        {
+<span class="nc" id="L46">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());</span>
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">    }</span>
+
+    @DeleteMapping(&quot;/FilmActor&quot;)
+    public void deleteFilmActor(@RequestBody FilmActorDto filmActorDto){
+        try{
+<span class="nc" id="L53">            service.deleteFilmActor(</span>
+                    new FilmActor(
+<span class="nc" id="L55">                            filmActorDto.getFilmTitle(),</span>
+<span class="nc" id="L56">                            filmActorDto.getActorName()</span>
+                    )
+            );
+<span class="nc" id="L59">        }catch(UnknownActorException e){</span>
+<span class="nc" id="L60">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());</span>
+<span class="nc" id="L61">        }</span>
+<span class="nc" id="L62">    }</span>
+
+    @PutMapping(&quot;/FilmActor&quot;)
+    public void updateFilmActor(@RequestBody FilmActorUpdateDto filmActorUpdateDto){
+        try{
+<span class="nc" id="L67">            service.updateFilmActor(</span>
+                    new FilmActor(
+<span class="nc" id="L69">                            filmActorUpdateDto.getFilmTitle(),</span>
+<span class="nc" id="L70">                            filmActorUpdateDto.getActorName()</span>
+                    ),
+                    new FilmActor(
+<span class="nc" id="L73">                            filmActorUpdateDto.getUpdatedFilmTitle(),</span>
+<span class="nc" id="L74">                            filmActorUpdateDto.getUpdatedActorName()</span>
+                    )
+            );
+<span class="nc" id="L77">        }catch(UnknownActorException | UnknownFilmException e)</span>
+        {
+<span class="nc" id="L79">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());</span>
+<span class="nc" id="L80">        }</span>
+<span class="nc" id="L81">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

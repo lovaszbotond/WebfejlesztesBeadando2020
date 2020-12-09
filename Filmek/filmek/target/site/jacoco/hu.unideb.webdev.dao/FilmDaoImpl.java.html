@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilmDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.dao</a> &gt; <span class="el_source">FilmDaoImpl.java</span></div><h1>FilmDaoImpl.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.dao;
+
+
+import hu.unideb.webdev.dao.entity.*;
+import hu.unideb.webdev.dao.repository.FilmRepository;
+import hu.unideb.webdev.dao.repository.LanguageRepository;
+import hu.unideb.webdev.exceptions.UnknownFilmException;
+import hu.unideb.webdev.exceptions.UnknownLanguageException;
+import hu.unideb.webdev.model.Film;
+import hu.unideb.webdev.model.Rating;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+@Service
+<span class="nc" id="L21">@Slf4j</span>
+<span class="nc" id="L22">@RequiredArgsConstructor</span>
+public class FilmDaoImpl implements FilmDao{
+
+    private final FilmRepository filmRepository;
+    private final LanguageRepository languageRepository;
+
+    //read teljes
+    @Override
+    public Collection&lt;Film&gt; readAll() {
+<span class="nc" id="L31">        log.info(&quot;Read Start:&quot;);</span>
+<span class="nc" id="L32">            return StreamSupport.stream(filmRepository.findAll().spliterator(), false).map(entity -&gt;</span>
+                    {
+<span class="nc" id="L34">                String entityRating = entity.getRating();</span>
+<span class="nc" id="L35">                Rating rating = null;</span>
+
+<span class="nc bnc" id="L37" title="All 6 branches missed.">                switch(entityRating){</span>
+                    case &quot;PG&quot;:
+<span class="nc" id="L39">                        rating = Rating.PG;</span>
+<span class="nc" id="L40">                        break;</span>
+                    case &quot;G&quot;:
+<span class="nc" id="L42">                        rating = Rating.G;</span>
+<span class="nc" id="L43">                        break;</span>
+                    case &quot;PG-13&quot;:
+<span class="nc" id="L45">                        rating = Rating.PG13;</span>
+<span class="nc" id="L46">                        break;</span>
+                    case &quot;R&quot;:
+<span class="nc" id="L48">                        rating = Rating.R;</span>
+<span class="nc" id="L49">                        break;</span>
+                    case &quot;NC-17&quot;:
+<span class="nc" id="L51">                        rating = Rating.NC17;</span>
+<span class="nc" id="L52">                        break;</span>
+                    default:
+<span class="nc" id="L54">                        System.out.println(&quot;nincs&quot;);</span>
+                }
+<span class="nc" id="L56">                return new Film(</span>
+                      //  entity.getId(),
+<span class="nc" id="L58">                        entity.getTitle(),</span>
+<span class="nc" id="L59">                        entity.getDescription(),</span>
+<span class="nc" id="L60">                        entity.getReleaseYear(),</span>
+<span class="nc" id="L61">                        entity.getLanguage().getLanguageId(),</span>
+
+<span class="nc" id="L63">                        entity.getRentalDuration(),</span>
+<span class="nc" id="L64">                        entity.getRentalRate(),</span>
+<span class="nc" id="L65">                        entity.getLength(),</span>
+<span class="nc" id="L66">                        entity.getReplacementCost(),</span>
+                        rating,
+<span class="nc" id="L68">                        entity.getSpecialFeatures());</span>
+<span class="nc" id="L69">                    }).collect(Collectors.toList());</span>
+        }
+
+
+        //create teljes
+        @Override
+        public void createFilm(Film film) throws UnknownLanguageException{
+        FilmEntity filmEntity;
+
+<span class="nc" id="L78">        filmEntity = FilmEntity.builder()</span>
+<span class="nc" id="L79">                .title(film.getTitle())</span>
+<span class="nc" id="L80">                .description(film.getDescription())</span>
+<span class="nc" id="L81">                .releaseYear(film.getReleaseYear())</span>
+<span class="nc" id="L82">                .language(queryLanguage(film.getLanguage()))</span>
+
+<span class="nc" id="L84">                .rentalDuration(film.getRentalDuration())</span>
+<span class="nc" id="L85">                .rentalRate(film.getRentalRate())</span>
+<span class="nc" id="L86">                .length(film.getLength())</span>
+<span class="nc" id="L87">                .replacementCost(film.getReplacementCost())</span>
+<span class="nc" id="L88">                .rating(film.getRating().toString())</span>
+<span class="nc" id="L89">                .specialFeatures(film.getSpecialFeatures())</span>
+<span class="nc" id="L90">                .build();</span>
+
+<span class="nc" id="L92">        log.info(&quot;LanguageEntity: {}&quot;, filmEntity);</span>
+        try{
+<span class="nc" id="L94">            log.info(&quot;Előtte&quot;);</span>
+<span class="nc" id="L95">            filmRepository.save(filmEntity);</span>
+           // film.setId(filmEntity.getId());
+<span class="nc" id="L97">            log.info(&quot;Utána&quot;);</span>
+<span class="nc" id="L98">        }catch(Exception e){</span>
+<span class="nc" id="L99">            log.error(e.getMessage());</span>
+<span class="nc" id="L100">        }</span>
+<span class="nc" id="L101">    }</span>
+
+    //delete teljes
+    @Override
+    public void deleteFilm(Film film) throws UnknownFilmException, UnknownLanguageException {
+<span class="nc" id="L106">        Collection&lt;FilmEntity&gt; filmEntity = filmRepository.findByTitleAndDescriptionAndReleaseYearAndLanguageAndRentalDurationAndRentalRateAndLengthAndReplacementCostAndRatingAndSpecialFeatures(</span>
+<span class="nc" id="L107">                film.getTitle(),</span>
+<span class="nc" id="L108">                film.getDescription(),</span>
+<span class="nc" id="L109">                film.getReleaseYear(),</span>
+<span class="nc" id="L110">                queryLanguage(film.getLanguage()),</span>
+
+<span class="nc" id="L112">                film.getRentalDuration(),</span>
+<span class="nc" id="L113">                film.getRentalRate(),</span>
+<span class="nc" id="L114">                film.getLength(),</span>
+<span class="nc" id="L115">                film.getReplacementCost(),</span>
+<span class="nc" id="L116">                film.getRating().getType(),</span>
+<span class="nc" id="L117">                film.getSpecialFeatures());</span>
+
+
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if(filmEntity.isEmpty())</span>
+        {
+<span class="nc" id="L122">            throw new UnknownFilmException(&quot;Unkown Film: &quot;+ filmEntity.toString());</span>
+        }
+
+<span class="nc" id="L125">        log.info(&quot;FilmEntity: {}&quot;, filmEntity);</span>
+        try{
+           // filmRepository.delete(filmEntity.get());
+<span class="nc" id="L128">            filmEntity.forEach(filmRepository::delete);</span>
+<span class="nc" id="L129">        }catch(Exception e)</span>
+        {
+<span class="nc" id="L131">            log.error(e.getMessage());</span>
+<span class="nc" id="L132">        }</span>
+<span class="nc" id="L133">    }</span>
+
+    //delete Id
+    @Override
+    public void deleteFilmById(Short id) throws UnknownFilmException{
+<span class="nc" id="L138">        Optional&lt;FilmEntity&gt; filmEntity = filmRepository.findById(id).stream().findFirst();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if(!filmEntity.isPresent())</span>
+        {
+<span class="nc" id="L141">            throw new UnknownFilmException(&quot;Unkown Film: &quot;+ id);</span>
+        }
+
+<span class="nc" id="L144">        log.info(&quot;FilmEntity: {}&quot;, filmEntity);</span>
+        try{
+<span class="nc" id="L146">            filmRepository.delete(filmEntity.get());</span>
+<span class="nc" id="L147">        }catch(Exception e)</span>
+        {
+<span class="nc" id="L149">            log.error(e.getMessage());</span>
+<span class="nc" id="L150">        }</span>
+
+<span class="nc" id="L152">    }</span>
+
+    // update teljes
+    @Override
+    public void updateFirstMatch(Film film, Film updated) throws UnknownLanguageException, UnknownFilmException{
+<span class="nc" id="L157">        Optional&lt;FilmEntity&gt; filmEntity = filmRepository.findByTitleAndDescriptionAndReleaseYearAndLanguageAndRentalDurationAndRentalRateAndLengthAndReplacementCostAndRatingAndSpecialFeatures(</span>
+<span class="nc" id="L158">                film.getTitle(),</span>
+<span class="nc" id="L159">                film.getDescription(),</span>
+<span class="nc" id="L160">                film.getReleaseYear(),</span>
+<span class="nc" id="L161">                queryLanguage(film.getLanguage()),</span>
+
+<span class="nc" id="L163">                film.getRentalDuration(),</span>
+<span class="nc" id="L164">                film.getRentalRate(),</span>
+<span class="nc" id="L165">                film.getLength(),</span>
+<span class="nc" id="L166">                film.getReplacementCost(),</span>
+<span class="nc" id="L167">                film.getRating().getType(),</span>
+<span class="nc" id="L168">                film.getSpecialFeatures())</span>
+<span class="nc" id="L169">                .stream().findFirst();</span>
+
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if(!filmEntity.isPresent())</span>
+        {
+<span class="nc" id="L173">            throw new UnknownFilmException(&quot;Unkown Film: &quot; + filmEntity);</span>
+        }
+
+<span class="nc" id="L176">        log.info(&quot;The Original Film is: &quot; + filmEntity.get().toString());</span>
+<span class="nc" id="L177">        filmEntity.get().setTitle(updated.getTitle());</span>
+<span class="nc" id="L178">        filmEntity.get().setDescription(updated.getDescription());</span>
+<span class="nc" id="L179">        filmEntity.get().setReleaseYear(updated.getReleaseYear());</span>
+<span class="nc" id="L180">        filmEntity.get().setLanguage(queryLanguage(updated.getLanguage()));</span>
+
+<span class="nc" id="L182">        filmEntity.get().setRentalDuration(updated.getRentalDuration());</span>
+<span class="nc" id="L183">        filmEntity.get().setRentalRate(updated.getRentalRate());</span>
+<span class="nc" id="L184">        filmEntity.get().setReplacementCost(updated.getReplacementCost());</span>
+<span class="nc" id="L185">        filmEntity.get().setSpecialFeatures(updated.getSpecialFeatures());</span>
+<span class="nc" id="L186">        log.info(&quot;The New Updated Film is: &quot; + filmEntity.get().toString());</span>
+        try{
+<span class="nc" id="L188">            filmRepository.save(filmEntity.get());</span>
+<span class="nc" id="L189">        }catch(Exception e)</span>
+        {
+<span class="nc" id="L191">            log.error(e.getMessage());</span>
+<span class="nc" id="L192">        }</span>
+<span class="nc" id="L193">    }</span>
+
+    //Laguage ID
+    protected LanguageEntity queryLanguage(int languageId) throws UnknownLanguageException{
+<span class="nc" id="L197">        Optional&lt;LanguageEntity&gt; languageEntity = languageRepository.findByLanguageId(languageId)</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                .stream().filter(entity -&gt; entity.getLanguageId()==(languageId)).findFirst();</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        if(!languageEntity.isPresent()){</span>
+<span class="nc" id="L200">            throw new UnknownLanguageException(&quot;Unknown Language Id: &quot; + languageId);</span>
+        }
+<span class="nc" id="L202">        return languageEntity.get();</span>
+    }
+
+    protected LanguageEntity queryOriginal(String name) throws UnknownLanguageException{
+<span class="nc" id="L206">        Optional&lt;LanguageEntity&gt; languageEntity = languageRepository.findByName(name)</span>
+<span class="nc" id="L207">                .stream().filter(entity -&gt; entity.getName().equals(name)).findFirst();</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        if(!languageEntity.isPresent()){</span>
+<span class="nc" id="L209">            throw new UnknownLanguageException(&quot;Unknown Language Id: &quot; + name);</span>
+        }
+<span class="nc" id="L211">        return languageEntity.get();</span>
+    }
+
+    public String checkLanguage(String L){
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if(L == null){</span>
+<span class="nc" id="L216">            return &quot;Nincs Megadva&quot;;</span>
+        }
+<span class="nc" id="L218">        return L;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

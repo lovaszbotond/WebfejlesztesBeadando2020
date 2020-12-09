@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilmUpdateDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.controller.dto</a> &gt; <span class="el_source">FilmUpdateDto.java</span></div><h1>FilmUpdateDto.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.controller.dto;
+
+import hu.unideb.webdev.dao.entity.LanguageEntity;
+import hu.unideb.webdev.model.Rating;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+<span class="nc bnc" id="L11" title="All 68 branches missed.">@Data</span>
+<span class="nc" id="L12">@SuperBuilder</span>
+<span class="nc" id="L13">@NoArgsConstructor</span>
+<span class="nc" id="L14">@AllArgsConstructor</span>
+public class FilmUpdateDto extends FilmDto {
+
+   // @Setter
+   // private Short updatedId;
+<span class="nc" id="L19">    private String updatedTitle;</span>
+<span class="nc" id="L20">    private String updatedDescription;</span>
+<span class="nc" id="L21">    private int updatedReleaseYear;</span>
+<span class="nc" id="L22">    private int updatedLanguage;</span>
+
+<span class="nc" id="L24">    private int updatedRentalDuration;</span>
+<span class="nc" id="L25">    private Double updatedRentalRate;</span>
+<span class="nc" id="L26">    private Short updatedLength;</span>
+<span class="nc" id="L27">    private Double updatedReplacementCost;</span>
+<span class="nc" id="L28">    private Rating updatedRating;</span>
+<span class="nc" id="L29">    private String updatedSpecialFeatures;</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

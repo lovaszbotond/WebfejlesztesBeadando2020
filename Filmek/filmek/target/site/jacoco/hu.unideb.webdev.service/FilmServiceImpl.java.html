@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilmServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.service</a> &gt; <span class="el_source">FilmServiceImpl.java</span></div><h1>FilmServiceImpl.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.service;
+
+import hu.unideb.webdev.dao.FilmDao;
+import hu.unideb.webdev.exceptions.UnknownFilmException;
+import hu.unideb.webdev.exceptions.UnknownLanguageException;
+import hu.unideb.webdev.model.Film;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+
+<span class="nc" id="L13">@Slf4j</span>
+@Service
+<span class="nc" id="L15">@RequiredArgsConstructor</span>
+public class FilmServiceImpl implements FilmService {
+
+    private final FilmDao filmDao;
+
+    @Override
+    public Collection&lt;Film&gt; getAllFilms()
+    {
+<span class="nc" id="L23">        return filmDao.readAll();</span>
+    }
+
+    @Override
+    public void recordFilm(Film film) throws UnknownLanguageException {
+<span class="nc" id="L28">        filmDao.createFilm(film);</span>
+<span class="nc" id="L29">    }</span>
+
+    @Override
+    public void deleteFilm(Film film) throws UnknownLanguageException, UnknownFilmException {
+<span class="nc" id="L33">         filmDao.deleteFilm(film);</span>
+<span class="nc" id="L34">    }</span>
+
+    @Override
+    public void deleteFilmId(Short filmId) throws UnknownFilmException{
+<span class="nc" id="L38">        filmDao.deleteFilmById(filmId);</span>
+<span class="nc" id="L39">    }</span>
+
+    @Override
+    public void updateFirstMatch(Film film,Film updated) throws UnknownFilmException, UnknownLanguageException {
+<span class="nc" id="L43">        filmDao.updateFirstMatch(film,updated);</span>
+<span class="nc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

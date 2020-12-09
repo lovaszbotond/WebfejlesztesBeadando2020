@@ -27,7 +27,7 @@ private final FilmActorDao filmActorDao;
     }
 
     @Override
-    public void deleteFilmActor(FilmActor filmActor) throws UnknownActorException{
+    public void deleteFilmActor(FilmActor filmActor) throws UnknownActorException {
         filmActorDao.deleteFilmActor(filmActor);
     }
 

@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface FilmActorService {
     Collection<FilmActor> getAllFilmActors();
     void recordFilmActor(FilmActor filmActor) throws UnknownActorException, UnknownFilmException;
-    void deleteFilmActor(FilmActor filmActor) throws UnknownActorException;
+    void deleteFilmActor(FilmActor filmActor) throws UnknownActorException, UnknownFilmException;
     void updateFilmActor(FilmActor filmActor, FilmActor updatedFilmActor) throws UnknownActorException, UnknownFilmException;
 
 }

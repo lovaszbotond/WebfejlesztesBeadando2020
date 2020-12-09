@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActorDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.dao</a> &gt; <span class="el_source">ActorDaoImpl.java</span></div><h1>ActorDaoImpl.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.dao;
+
+import hu.unideb.webdev.dao.entity.ActorEntity;
+import hu.unideb.webdev.dao.repository.ActorRepository;
+import hu.unideb.webdev.exceptions.UnknownActorException;
+import hu.unideb.webdev.model.Actor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+@Service
+<span class="nc" id="L16">@Slf4j</span>
+<span class="nc" id="L17">@RequiredArgsConstructor</span>
+public class ActorDaoImpl implements ActorDao {
+
+    private final ActorRepository actorRepository;
+
+    //read
+    @Override
+    public Collection&lt;Actor&gt; readAll() {
+<span class="nc" id="L25">        log.info(&quot;Read Start:&quot;);</span>
+<span class="nc" id="L26">        return StreamSupport.stream(actorRepository.findAll().spliterator(),false).map(entity -&gt; new Actor(</span>
+<span class="nc" id="L27">                entity.getFirstName(),</span>
+<span class="nc" id="L28">                entity.getLastName()</span>
+<span class="nc" id="L29">        )).collect(Collectors.toList());</span>
+
+    }
+    //create
+    @Override
+    public void createActor(Actor actor){
+        ActorEntity actorEntity;
+
+<span class="nc" id="L37">        actorEntity = ActorEntity.builder()</span>
+<span class="nc" id="L38">                .firstName(actor.getFirstName())</span>
+<span class="nc" id="L39">                .lastName(actor.getLastName())</span>
+<span class="nc" id="L40">                .build();</span>
+<span class="nc" id="L41">        log.info(&quot;ActorEntity: {}&quot;, actorEntity);</span>
+        try{
+<span class="nc" id="L43">            actorRepository.save(actorEntity);</span>
+<span class="nc" id="L44">        }catch(Exception e)</span>
+        {
+<span class="nc" id="L46">            log.error(e.getMessage());</span>
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">    }</span>
+    //delete
+    @Override
+    public void deleteActor(Actor actor) throws UnknownActorException {
+<span class="nc" id="L52">        Optional&lt;ActorEntity&gt; actorEntity = actorRepository.findByFirstNameAndLastName(actor.getFirstName(),actor.getLastName())</span>
+<span class="nc bnc" id="L53" title="All 4 branches missed.">        .stream().filter(entity -&gt; entity.getFirstName().equals(actor.getFirstName()) &amp;&amp; entity.getLastName().equals(actor.getLastName()))</span>
+<span class="nc" id="L54">        .findFirst();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if(!actorEntity.isPresent())</span>
+        {
+<span class="nc" id="L57">            throw new UnknownActorException(&quot;Unknown Actor: &quot; + actorEntity.toString());</span>
+        }
+        try{
+<span class="nc" id="L60">            actorRepository.delete(actorEntity.get());</span>
+<span class="nc" id="L61">        }catch(Exception e)</span>
+        {
+<span class="nc" id="L63">            log.error(e.getMessage());</span>
+<span class="nc" id="L64">        }</span>
+<span class="nc" id="L65">    }</span>
+
+    //update
+    @Override
+    public void updateActor(Actor actor, Actor updatedActor) throws UnknownActorException {
+<span class="nc" id="L70">        Optional&lt;ActorEntity&gt; actorEntity = actorRepository.findByFirstNameAndLastName(actor.getFirstName(),actor.getLastName())</span>
+<span class="nc bnc" id="L71" title="All 4 branches missed.">                .stream().filter(entity -&gt; entity.getFirstName().equals(actor.getFirstName()) &amp;&amp; entity.getLastName().equals(actor.getLastName()))</span>
+<span class="nc" id="L72">                .findFirst();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if(!actorEntity.isPresent())</span>
+        {
+<span class="nc" id="L75">            throw new UnknownActorException(&quot;Unkonwn Actor: &quot; + actor);</span>
+        }
+
+<span class="nc" id="L78">        log.info(&quot;The original Actor: &quot; + actorEntity);</span>
+<span class="nc" id="L79">        actorEntity.get().setFirstName(updatedActor.getFirstName());</span>
+<span class="nc" id="L80">        actorEntity.get().setLastName(updatedActor.getLastName());</span>
+<span class="nc" id="L81">        log.info(&quot;The new Actor is: &quot; + actorEntity.toString());</span>
+
+        try{
+<span class="nc" id="L84">            actorRepository.save(actorEntity.get());</span>
+<span class="nc" id="L85">        }catch(Exception e){</span>
+<span class="nc" id="L86">            log.error(e.getMessage());</span>
+<span class="nc" id="L87">        }</span>
+<span class="nc" id="L88">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

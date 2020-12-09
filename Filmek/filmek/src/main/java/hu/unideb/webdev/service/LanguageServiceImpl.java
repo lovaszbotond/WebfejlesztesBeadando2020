@@ -22,7 +22,7 @@ public class LanguageServiceImpl implements LanguageService {
     }
 
     @Override
-    public void recordLanguage(Language language) throws UnknownLanguageException{
+    public void recordLanguage(Language language){
         languageDao.createLanguage(language);
     }
 

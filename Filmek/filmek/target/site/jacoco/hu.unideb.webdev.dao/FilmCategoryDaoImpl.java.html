@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilmCategoryDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.dao</a> &gt; <span class="el_source">FilmCategoryDaoImpl.java</span></div><h1>FilmCategoryDaoImpl.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.dao;
+
+import hu.unideb.webdev.dao.entity.CategoryEntitiy;
+import hu.unideb.webdev.dao.entity.FilmCategoryEntity;
+import hu.unideb.webdev.dao.entity.FilmEntity;
+import hu.unideb.webdev.dao.repository.CategoryRepository;
+import hu.unideb.webdev.dao.repository.FilmCategoryRepository;
+import hu.unideb.webdev.dao.repository.FilmRepository;
+import hu.unideb.webdev.exceptions.UnknownCategoryException;
+import hu.unideb.webdev.exceptions.UnknownFilmException;
+import hu.unideb.webdev.model.FilmCategory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+@Service
+<span class="nc" id="L22">@Slf4j</span>
+<span class="nc" id="L23">@RequiredArgsConstructor</span>
+public class FilmCategoryDaoImpl implements FilmCategoryDao{
+
+    private final FilmCategoryRepository filmCategoryRepository;
+    private final FilmRepository filmRepository;
+    private final CategoryRepository categoryRepository;
+
+    //read
+    @Override
+    public Collection&lt;FilmCategory&gt; readAll() {
+<span class="nc" id="L33">        log.info(&quot;Read Start:&quot;);</span>
+<span class="nc" id="L34">        return StreamSupport.stream(filmCategoryRepository.findAll().spliterator(), false).map(entity -&gt; new FilmCategory(</span>
+<span class="nc" id="L35">                entity.getKey().getFilmId().getTitle(),</span>
+<span class="nc" id="L36">                entity.getKey().getCategoryId().getName()</span>
+<span class="nc" id="L37">        )).collect((Collectors.toList()));</span>
+    }
+
+    //create
+    @Override
+    public void createFilmCategory(FilmCategory filmCategory) throws UnknownCategoryException,UnknownFilmException{
+        FilmCategoryEntity filmCategoryEntity;
+
+<span class="nc" id="L45">        filmCategoryEntity = FilmCategoryEntity.builder()</span>
+<span class="nc" id="L46">                .key( new FilmCategoryEntity.Key(queryFilmTitle(filmCategory.getFilmTitle()), queryCategoryName(filmCategory.getCategoryName())))</span>
+<span class="nc" id="L47">                .build();</span>
+
+<span class="nc" id="L49">        log.info(&quot;FilmCategoryEntity: {}&quot;, filmCategoryEntity);</span>
+        try{
+<span class="nc" id="L51">           filmCategoryRepository.save(filmCategoryEntity);</span>
+<span class="nc" id="L52">        }catch(Exception e)</span>
+        {
+<span class="nc" id="L54">            log.error(e.getMessage());</span>
+<span class="nc" id="L55">        }</span>
+<span class="nc" id="L56">    }</span>
+
+    @Override
+    public void deleteFilmCategory(FilmCategory filmCategory) throws  UnknownCategoryException, UnknownFilmException{
+<span class="nc" id="L60">        Optional&lt;FilmCategoryEntity&gt; filmCategoryEntity = filmCategoryRepository.findByKey_FilmId_TitleAndKey_CategoryId_Name(</span>
+<span class="nc" id="L61">                filmCategory.getFilmTitle(), filmCategory.getCategoryName()</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        ).stream().filter(entity -&gt; entity.getKey().getFilmId().getTitle().equals(filmCategory.getFilmTitle()) &amp;&amp;</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                entity.getKey().getCategoryId().getName().equals(filmCategory.getCategoryName())).findFirst();</span>
+
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if(!filmCategoryEntity.isPresent())</span>
+        {
+<span class="nc" id="L67">            throw new UnknownCategoryException(&quot;Unkown FilmCategory: &quot; + filmCategory.toString());</span>
+        }
+        try {
+<span class="nc" id="L70">            filmCategoryRepository.delete(filmCategoryEntity.get());</span>
+<span class="nc" id="L71">        } catch(Exception e){</span>
+<span class="nc" id="L72">            log.error(e.getMessage());</span>
+<span class="nc" id="L73">        }</span>
+<span class="nc" id="L74">    }</span>
+
+    @Override
+    public void updateFilmCategory(FilmCategory filmCategory, FilmCategory updatedFilmCategory) throws UnknownCategoryException, UnknownFilmException {
+<span class="nc" id="L78">        Optional&lt;FilmCategoryEntity&gt; filmCategoryEntity = filmCategoryRepository.findByKey_FilmId_TitleAndKey_CategoryId_Name(</span>
+<span class="nc" id="L79">               filmCategory.getFilmTitle(),filmCategory.getCategoryName()</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        ).stream().filter(entity -&gt; entity.getKey().getFilmId().getTitle().equals(filmCategory.getFilmTitle()) &amp;&amp;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                entity.getKey().getCategoryId().getName().equals(filmCategory.getCategoryName())).findFirst();</span>
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if(!filmCategoryEntity.isPresent())</span>
+        {
+<span class="nc" id="L85">            throw new UnknownCategoryException(&quot;Unknown FilmCategory: &quot; + filmCategory.toString());</span>
+        }
+<span class="nc" id="L87">        log.info(&quot;The original Filmcategory: &quot; + filmCategoryEntity);</span>
+<span class="nc" id="L88">        filmCategoryEntity.get().getKey().setFilmId(queryFilmTitle(updatedFilmCategory.getFilmTitle()));</span>
+<span class="nc" id="L89">        filmCategoryEntity.get().getKey().setCategoryId(queryCategoryName(updatedFilmCategory.getCategoryName()));</span>
+<span class="nc" id="L90">        log.info(&quot;The new Filmcategory: &quot;+ filmCategoryEntity.get().getKey());</span>
+
+        try{
+<span class="nc" id="L93">            filmCategoryRepository.save(filmCategoryEntity.get());</span>
+<span class="nc" id="L94">        }catch(Exception e){</span>
+<span class="nc" id="L95">            log.error(e.getMessage());</span>
+<span class="nc" id="L96">        }</span>
+<span class="nc" id="L97">    }</span>
+
+
+    protected FilmEntity queryFilmTitle(String title) throws UnknownFilmException{
+<span class="nc" id="L101">        Optional&lt;FilmEntity&gt; filmEntity = filmRepository.findByTitle(title).stream()</span>
+<span class="nc" id="L102">                .filter(entity -&gt; entity.getTitle().equals(title)).findFirst();</span>
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if(!filmEntity.isPresent())</span>
+        {
+<span class="nc" id="L106">            throw new UnknownFilmException(&quot;Unknown Film Title: &quot; + title);</span>
+        }
+<span class="nc" id="L108">        return filmEntity.get();</span>
+    }
+
+    protected CategoryEntitiy queryCategoryName(String name) throws UnknownCategoryException{
+<span class="nc" id="L112">        Optional&lt;CategoryEntitiy&gt; categoryEntitiy = categoryRepository.findByName(name).stream()</span>
+<span class="nc" id="L113">                .filter(entity -&gt; entity.getName().equals(name)).findFirst();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if(!categoryEntitiy.isPresent())</span>
+        {
+<span class="nc" id="L116">            throw new UnknownCategoryException(&quot;Unknown Category Name: &quot; + name);</span>
+        }
+<span class="nc" id="L118">        return categoryEntitiy.get();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

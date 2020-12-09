@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LanguageDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">filmek</a> &gt; <a href="index.source.html" class="el_package">hu.unideb.webdev.dao</a> &gt; <span class="el_source">LanguageDaoImpl.java</span></div><h1>LanguageDaoImpl.java</h1><pre class="source lang-java linenums">package hu.unideb.webdev.dao;
+
+import hu.unideb.webdev.dao.entity.LanguageEntity;
+import hu.unideb.webdev.dao.repository.LanguageRepository;
+import hu.unideb.webdev.exceptions.UnknownLanguageException;
+import hu.unideb.webdev.model.Language;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+@Service
+<span class="nc" id="L17">@Slf4j</span>
+<span class="nc" id="L18">@RequiredArgsConstructor</span>
+public class LanguageDaoImpl implements LanguageDao {
+
+    private final LanguageRepository languageRepository;
+
+    //read
+    @Override
+    public Collection&lt;Language&gt; readAll() {
+<span class="nc" id="L26">        log.info(&quot;Read Start:&quot;);</span>
+<span class="nc" id="L27">        return StreamSupport.stream(languageRepository.findAll().spliterator(), false).map(entity -&gt; new Language(</span>
+<span class="nc" id="L28">                entity.getName()</span>
+<span class="nc" id="L29">        )).collect((Collectors.toList()));</span>
+    }
+
+    //create
+    @Override
+    public void createLanguage(Language language){
+        LanguageEntity languageEntity;
+
+<span class="nc" id="L37">        languageEntity = LanguageEntity.builder()</span>
+<span class="nc" id="L38">                .name(language.getName())</span>
+<span class="nc" id="L39">                .build();</span>
+
+<span class="nc" id="L41">        log.info(&quot;LanguageEntity: {}&quot;, languageEntity);</span>
+        try{
+<span class="nc" id="L43">            languageRepository.save(languageEntity);</span>
+<span class="nc" id="L44">        }catch(Exception e){</span>
+<span class="nc" id="L45">            log.error(e.getMessage());</span>
+<span class="nc" id="L46">        }</span>
+<span class="nc" id="L47">    }</span>
+
+    //delete
+    @Override
+    public void deleteLanguage(Language language) throws UnknownLanguageException{
+<span class="nc" id="L52">        Optional&lt;LanguageEntity&gt; languageEntity = languageRepository.findByName(language.getName())</span>
+<span class="nc" id="L53">                .stream().filter(entity -&gt; entity.getName().equals(language.getName())).findFirst();</span>
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if(!languageEntity.isPresent())</span>
+        {
+<span class="nc" id="L57">            throw new UnknownLanguageException(&quot;Unkown Language: &quot; + language.getName());</span>
+        }
+
+<span class="nc" id="L60">        log.info(&quot;LangueEntity : {}&quot;, languageEntity);</span>
+        try{
+<span class="nc" id="L62">            languageRepository.delete(languageEntity.get());</span>
+<span class="nc" id="L63">        }catch(Exception e){</span>
+<span class="nc" id="L64">            log.error(e.getMessage());</span>
+<span class="nc" id="L65">        }</span>
+<span class="nc" id="L66">    }</span>
+
+
+    //update
+    @Override
+    public void updateLanguage(Language language, Language updatedLanguage) throws UnknownLanguageException{
+<span class="nc" id="L72">        Optional&lt;LanguageEntity&gt; languageEntity = languageRepository.findByName(language.getName())</span>
+<span class="nc" id="L73">                .stream().filter(entity -&gt; entity.getName().equals(language.getName())).findFirst();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">    if(!languageEntity.isPresent())</span>
+    {
+<span class="nc" id="L76">        throw new UnknownLanguageException(&quot;Unkonwn Language: &quot; + language.getName());</span>
+    }
+
+<span class="nc" id="L79">        log.info(&quot;The original Language: &quot; + languageEntity);</span>
+<span class="nc" id="L80">        languageEntity.get().setName(updatedLanguage.getName());</span>
+<span class="nc" id="L81">        log.info(&quot;The new Language is: &quot; + languageEntity);</span>
+
+        try{
+<span class="nc" id="L84">            languageRepository.save(languageEntity.get());</span>
+<span class="nc" id="L85">        }catch(Exception e){</span>
+<span class="nc" id="L86">            log.error(e.getMessage());</span>
+<span class="nc" id="L87">        }</span>
+<span class="nc" id="L88">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

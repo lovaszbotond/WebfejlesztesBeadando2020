@@ -56,7 +56,7 @@ public class FilmActorController {
                             filmActorDto.getActorName()
                     )
             );
-        }catch(UnknownActorException e){
+        }catch(UnknownActorException | UnknownFilmException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         }
     }

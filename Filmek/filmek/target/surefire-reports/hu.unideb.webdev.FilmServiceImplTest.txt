@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: hu.unideb.webdev.FilmServiceImplTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.009 s <<< FAILURE! - in hu.unideb.webdev.FilmServiceImplTest
+recordFilmTest(hu.unideb.webdev.FilmServiceImplTest)  Time elapsed: 0.009 s  <<< ERROR!
+java.lang.NullPointerException
+	at hu.unideb.webdev.FilmServiceImplTest.recordFilmTest(FilmServiceImplTest.java:35)
+
